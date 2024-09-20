@@ -152,7 +152,6 @@ public class AuthorIT {
     public void deleteWithNotExistsIdShouldThrowException() {
 
         long deleteAuthorId = TOTAL_AUTHORS + 1;
-
         ResponseEntity<?> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + deleteAuthorId, HttpMethod.DELETE, null, Void.class);
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());

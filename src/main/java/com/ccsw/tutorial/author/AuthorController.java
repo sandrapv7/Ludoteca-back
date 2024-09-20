@@ -38,9 +38,10 @@ public class AuthorController {
     @Operation(summary = "Find Page", description = "Method that return a page of Authors")
     @RequestMapping(path = "", method = RequestMethod.POST)
     public Page<AuthorDto> findPage(@RequestBody AuthorSearchDto dto) {
-
+        //Recibo los datos como una entidad
         Page<Author> page = this.authorService.findPage(dto);
-
+        //Se crea una nueva página de de AuthorDto. Se obtiene el contenido de la página de autores, se convierte
+        //cada autor en un dto y se recopila en una lista.
         return new PageImpl<>(page.getContent().stream().map(e -> mapper.map(e, AuthorDto.class)).collect(Collectors.toList()), page.getPageable(), page.getTotalElements());
     }
 

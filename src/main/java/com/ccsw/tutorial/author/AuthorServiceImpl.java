@@ -17,6 +17,15 @@ import org.springframework.stereotype.Service;
 @Transactional
 public class AuthorServiceImpl implements AuthorService {
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Author get(Long id) {
+
+        return this.authorRepository.findById(id).orElse(null);
+    }
+
     @Autowired
     AuthorRepository authorRepository;
 
@@ -25,7 +34,6 @@ public class AuthorServiceImpl implements AuthorService {
      */
     @Override
     public Page<Author> findPage(AuthorSearchDto dto) {
-
         return this.authorRepository.findAll(dto.getPageable().getPageable());
     }
 
@@ -40,11 +48,11 @@ public class AuthorServiceImpl implements AuthorService {
         if (id == null) {
             author = new Author();
         } else {
-            author = this.authorRepository.findById(id).orElse(null);
+            author = this.get(id);
         }
 
+        //Copia las propiedades del objeto data a author. En este caso no queremos sobreescribir el id.
         BeanUtils.copyProperties(data, author, "id");
-
         this.authorRepository.save(author);
     }
 
@@ -54,7 +62,7 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public void delete(Long id) throws Exception {
 
-        if (this.authorRepository.findById(id).orElse(null) == null) {
+        if (this.get(id) == null) {
             throw new Exception("Not exists");
         }
 

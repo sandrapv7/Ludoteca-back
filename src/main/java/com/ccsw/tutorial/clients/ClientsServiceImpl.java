@@ -26,9 +26,7 @@ public class ClientsServiceImpl implements ClientsService {
         if (this.clientsRepository.findByName(dto.getName()).isPresent()) {
             throw new Exception("Ja existeix un usuari amb aquest nom");
         }
-        //Antes de guardar en el repositorio tengo que crear la entidad
         Clients client;
-        //Tengo que ver si hay id o no.
         if (id == null) {
             client = new Clients();
 

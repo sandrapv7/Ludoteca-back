@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Paginación y ordenamiento en las consultas a la base de datos.
+ */
 public class PageableRequest implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -64,9 +67,15 @@ public class PageableRequest implements Serializable {
         this.sort = sort;
     }
 
+    /**
+     * El objeto Pageable no es una interfaz que le permite a Spring JPA saber que
+     * página se quiere buscar, cual es el tamaño de página y cuales son las propiedades de ordenación
+     * que se debe lanzar en la consulta. (Encapsular la información de ordenación y paginación).
+     * @return pagerequest
+     */
+
     @JsonIgnore
     public Pageable getPageable() {
-
         return PageRequest.of(this.pageNumber, this.pageSize, Sort.by(sort.stream().map(e -> new Sort.Order(e.getDirection(), e.getProperty())).collect(Collectors.toList())));
     }
 
@@ -74,8 +83,9 @@ public class PageableRequest implements Serializable {
 
         private static final long serialVersionUID = 1L;
 
+        //Nombre del campo por el cual se quieren ordenar los datos.
         private String property;
-
+        //Dirección de ordenación (ascendente o descendente).
         private Sort.Direction direction;
 
         protected String getProperty() {
