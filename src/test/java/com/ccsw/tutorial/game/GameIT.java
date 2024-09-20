@@ -150,7 +150,7 @@ public class GameIT {
         int GAMES_WITH_FILTER = 0;
 
         Map<String, Object> params = new HashMap<>();
-        params.put(TITLE_PARAM, NOT_EXISTS_TITLE);
+        params.put(TITLE_PARAM, EXISTS_TITLE);
         params.put(CATEGORY_ID_PARAM, NOT_EXISTS_CATEGORY);
 
         ResponseEntity<List<GameDto>> response = restTemplate.exchange(getUrlWithParams(), HttpMethod.GET, null, responseType, params);

@@ -35,7 +35,7 @@ public class GameServiceImpl implements GameService {
      */
     @Override
     public List<Game> find(String title, Long idCategory) {
-
+        //Title es de la entidad entonces con poner el nombre tal cual ya sirve, pero id de categoria no es de game entonces hay que poner el path.
         GameSpecification titleSpec = new GameSpecification(new SearchCriteria("title", ":", title));
         GameSpecification categorySpec = new GameSpecification(new SearchCriteria("category.id", ":", idCategory));
 
