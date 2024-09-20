@@ -31,4 +31,5 @@ public interface ClientsService {
      */
     void delete(Long id) throws Exception;
 
+    Clients get(Long id);
 }

@@ -31,7 +31,7 @@ public class ClientsServiceImpl implements ClientsService {
             client = new Clients();
 
         } else {
-            client = this.clientsRepository.findById(id).orElse(null);
+            client = this.get(id);
         }
 
         client.setName(dto.getName());
@@ -41,9 +41,14 @@ public class ClientsServiceImpl implements ClientsService {
     @Override
     public void delete(Long id) throws Exception {
 
-        if (this.clientsRepository.findById(id).orElse(null) == null) {
+        if (this.get(id) == null) {
             throw new Exception("Not Exists");
         }
         this.clientsRepository.deleteById(id);
+    }
+
+    @Override
+    public Clients get(Long id) {
+        return this.clientsRepository.findById(id).orElse(null);
     }
 }
