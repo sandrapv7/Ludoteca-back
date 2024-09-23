@@ -1,8 +1,9 @@
 package com.ccsw.tutorial.loan;
 
-import com.ccsw.tutorial.game.model.Game;
 import com.ccsw.tutorial.loan.model.Loan;
 import com.ccsw.tutorial.loan.model.LoanDto;
+import com.ccsw.tutorial.loan.model.LoanSearchDto;
+import org.springframework.data.domain.Page;
 
 import java.util.Date;
 import java.util.List;
@@ -12,19 +13,21 @@ public interface LoanService {
     /**
      * Recupera los prestamos filtrando opcionalmente por título de juego, cliente, fecha.
      *
-     * @param title título del juego
      * @param idClients PK de Clients
      * @param date fecha
-     * @return {@link List} de {@link Game}
+     * @return {@link List} de {@link Loan}
      */
-    List<Loan> find(String title, Long idClients, Date date);
+    List<Loan> find(Long idGame, Long idClients, Date date);
+
+    //List<Loan> findAll();
+
+    Page<Loan> findPage(LoanSearchDto dto);
 
     /**
      * Guardar un prestamo.
-     * @param id PK del prestamo
      * @param dto información del prestamo.
      */
-    void save(Long id, LoanDto dto);
+    void save(LoanDto dto);
 
     void delete(Long id) throws Exception;
 }

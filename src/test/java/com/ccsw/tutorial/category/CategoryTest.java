@@ -48,7 +48,6 @@ public class CategoryTest {
         categoryDto.setName(CATEGORY_NAME);
 
         ArgumentCaptor<Category> category = ArgumentCaptor.forClass(Category.class);
-
         categoryService.save(null, categoryDto);
 
         verify(categoryRepository).save(category.capture()); //Mirar que el save se ha llamado con los argumentos esperados y se capturan esos argumentos.

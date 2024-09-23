@@ -27,10 +27,10 @@ public class Loan {
     @JoinColumn(name = "client_id", nullable = false)
     private Clients client;
 
-    @Column(name = "dateStart", nullable = false)
+    @Column(name = "date_start", nullable = false)
     private Date dateStart;
 
-    @Column(name = "dateEnd", nullable = false)
+    @Column(name = "date_end", nullable = false)
     private Date dateEnd;
 
     public Long getId() {
@@ -60,7 +60,7 @@ public class Loan {
     public Date getDateStart() {
         return dateStart;
     }
-    
+
     public void setDateStart(Date dateStart) {
         this.dateStart = dateStart;
     }
