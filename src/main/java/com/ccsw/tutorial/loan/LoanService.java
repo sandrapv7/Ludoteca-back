@@ -13,13 +13,13 @@ public interface LoanService {
     /**
      * Recupera los prestamos filtrando opcionalmente por título de juego, cliente, fecha.
      *
-     * @param idClients PK de Clients
+     * @param idClient PK de Clients
      * @param date fecha
      * @return {@link List} de {@link Loan}
      */
-    List<Loan> find(Long idGame, Long idClients, Date date);
+    List<Loan> find(Long idGame, Long idClient, Date date);
 
-    //List<Loan> findAll();
+    List<Loan> findAll();
 
     Page<Loan> findPage(LoanSearchDto dto);
 
@@ -30,4 +30,6 @@ public interface LoanService {
     void save(LoanDto dto);
 
     void delete(Long id) throws Exception;
+
+    Loan get(Long id);
 }

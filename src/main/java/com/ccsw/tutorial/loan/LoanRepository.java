@@ -14,7 +14,7 @@ public interface LoanRepository extends CrudRepository<Loan, Long>, JpaSpecifica
     Page<Loan> findAll(Pageable pageable);
 
     @Override
-    @EntityGraph(attributePaths = { "idGame", "idClient", "date" })
+    @EntityGraph(attributePaths = { "game", "clients" })
     List<Loan> findAll(Specification<Loan> spec);
 
 }

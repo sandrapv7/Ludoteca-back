@@ -5,8 +5,6 @@ import com.ccsw.tutorial.loan.model.Loan;
 import jakarta.persistence.criteria.*;
 import org.springframework.data.jpa.domain.Specification;
 
-import java.util.Date;
-
 public class LoanSpecification implements Specification<Loan> {
 
     private static final long serialVersionUID = 1L;
@@ -24,9 +22,6 @@ public class LoanSpecification implements Specification<Loan> {
             Path<String> path = getPath(root);
             if (path.getJavaType() == String.class) {
                 return builder.like(path, "%" + criteria.getValue() + "%");
-            } else if (criteria.getKey().equals("date") && criteria.getValue() != null) {
-                Date dateValue = (Date) criteria.getValue();
-                return builder.and(builder.lessThanOrEqualTo(root.get("date_end"), dateValue), builder.greaterThanOrEqualTo(root.get("date_start"), dateValue));
             } else {
                 return builder.equal(path, criteria.getValue());
             }

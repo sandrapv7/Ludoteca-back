@@ -24,7 +24,7 @@ public class Loan {
     private Game game;
 
     @ManyToOne
-    @JoinColumn(name = "client_id", nullable = false)
+    @JoinColumn(name = "clients_id", nullable = false)
     private Clients client;
 
     @Column(name = "date_start", nullable = false)

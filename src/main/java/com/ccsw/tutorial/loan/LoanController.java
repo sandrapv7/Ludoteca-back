@@ -38,7 +38,7 @@ public class LoanController {
     @RequestMapping(path = "", method = RequestMethod.POST)
     public Page<LoanDto> findPage(@RequestBody LoanSearchDto dto) {
         //Recibo los datos como una entidad
-        Page<Loan> page = this.loanService.findPage(dto);
+        Page<Loan> page = loanService.findPage(dto);
         //Se crea una nueva página de de AuthorDto. Se obtiene el contenido de la página de autores, se convierte
         //cada autor en un dto y se recopila en una lista.
         return new PageImpl<>(page.getContent().stream().map(e -> mapper.map(e, LoanDto.class)).collect(Collectors.toList()), page.getPageable(), page.getTotalElements());
@@ -48,7 +48,7 @@ public class LoanController {
     @Operation(summary = "Find2", description = "Method that return a list of Categories")
     @RequestMapping(path = "", method = RequestMethod.GET)
     public List<LoanDto> findAll() {
-        List<Loan> loans = this.loanService.findAll();
+        List<Loan> loans = loanService.findAll();
         return loans.stream().map(e -> mapper.map(e, LoanDto.class)).collect(Collectors.toList());
     }*/
 

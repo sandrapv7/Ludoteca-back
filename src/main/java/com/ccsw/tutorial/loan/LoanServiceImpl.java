@@ -30,24 +30,24 @@ public class LoanServiceImpl implements LoanService {
     GameService gameService;
 
     @Override
-    public List<Loan> find(Long idGame, Long idClients, Date date) {
+    public List<Loan> find(Long idGame, Long idClient, Date date) {
 
         LoanSpecification gameSpec = new LoanSpecification(new SearchCriteria("game.id", ":", idGame));
-        LoanSpecification clientSpec = new LoanSpecification(new SearchCriteria("client.id", ":", idClients));
+        LoanSpecification clientSpec = new LoanSpecification(new SearchCriteria("clients.id", ":", idClient));
         LoanSpecification dateSpec = new LoanSpecification(new SearchCriteria("date", ":", date));
 
+        // Combina las especificaciones teniendo en cuenta la navegación de propiedades
         Specification<Loan> spec = Specification.where(gameSpec).and(clientSpec).and(dateSpec);
 
         return this.loanRepository.findAll(spec);
 
     }
 
-    /*
     @Override
     public List<Loan> findAll() {
 
         return (List<Loan>) this.loanRepository.findAll();
-    }*/
+    }
 
     @Override
     public Page<Loan> findPage(LoanSearchDto dto) {
@@ -67,10 +67,15 @@ public class LoanServiceImpl implements LoanService {
 
     @Override
     public void delete(Long id) throws Exception {
-        if (this.loanRepository.findById(id).orElse(null) == null) {
+        if (this.get(id) == null) {
             throw new Exception("Not Exists");
         }
 
         this.loanRepository.deleteById(id);
+    }
+
+    @Override
+    public Loan get(Long id) {
+        return this.loanRepository.findById(id).orElse(null);
     }
 }
