@@ -25,7 +25,7 @@ public class Loan {
 
     @ManyToOne
     @JoinColumn(name = "clients_id", nullable = false)
-    private Clients client;
+    private Clients clients;
 
     @Column(name = "date_start", nullable = false)
     private Date dateStart;
@@ -50,11 +50,11 @@ public class Loan {
     }
 
     public Clients getClient() {
-        return client;
+        return clients;
     }
 
     public void setClient(Clients client) {
-        this.client = client;
+        this.clients = client;
     }
 
     public Date getDateStart() {
