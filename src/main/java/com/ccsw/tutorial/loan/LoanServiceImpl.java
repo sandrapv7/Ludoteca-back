@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Transactional
@@ -62,6 +63,12 @@ public class LoanServiceImpl implements LoanService {
 
         if (dto.getDateEnd().before(dto.getDateStart())) {
             throw new Exception("La fecha de fin no puede ser anterior a la fecha de inicio");
+        }
+
+        long diffMilliSec = Math.abs(dto.getDateEnd().getTime() - dto.getDateStart().getTime());
+        long diffDays = TimeUnit.DAYS.convert(diffMilliSec, TimeUnit.MILLISECONDS);
+        if (diffDays > 14) {
+            throw new Exception("El período de préstamo no puede ser mayor a 14 días");
         }
 
         BeanUtils.copyProperties(dto, loan, "client", "game");
