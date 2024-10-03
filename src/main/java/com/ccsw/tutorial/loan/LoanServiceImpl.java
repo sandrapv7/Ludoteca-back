@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -76,6 +77,20 @@ public class LoanServiceImpl implements LoanService {
         if (!existingLoansEnd.isEmpty() || !existingLoansStart.isEmpty()) {
             throw new Exception("El juego ya está prestado a otro cliente en el periodo de tiempo seleccionado.");
         }
+
+        Calendar start = Calendar.getInstance();
+        start.setTime(dto.getDateStart());
+        Calendar end = Calendar.getInstance();
+        end.setTime(dto.getDateEnd());
+        for (Date date = start.getTime(); start.before(end); start.add(Calendar.DATE, 1), date = start.getTime()) {
+            existingLoansStart = find(null, dto.getClient().getId(), dto.getDateStart());
+            existingLoansEnd = find(null, dto.getClient().getId(), dto.getDateEnd());
+            if (!existingLoansEnd.isEmpty() || !existingLoansStart.isEmpty()) {
+
+                throw new Exception("Este cliente ya tiene un juego prestado el mismo día.");
+            }
+        }
+
         BeanUtils.copyProperties(dto, loan, "client", "game");
         loan.setGame(gameService.get(dto.getGame().getId()));
         loan.setClient(clientsService.get(dto.getClient().getId()));
