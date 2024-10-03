@@ -3,6 +3,7 @@ package com.ccsw.tutorial.loan.model;
 import com.ccsw.tutorial.clients.model.Clients;
 import com.ccsw.tutorial.game.model.Game;
 import jakarta.persistence.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
@@ -27,9 +28,13 @@ public class Loan {
     @JoinColumn(name = "clients_id", nullable = false)
     private Clients clients;
 
+    @Temporal(TemporalType.DATE)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Column(name = "date_start", nullable = false)
     private Date dateStart;
 
+    @Temporal(TemporalType.DATE)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Column(name = "date_end", nullable = false)
     private Date dateEnd;
 
