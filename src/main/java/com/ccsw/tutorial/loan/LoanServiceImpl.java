@@ -34,8 +34,8 @@ public class LoanServiceImpl implements LoanService {
 
         LoanSpecification gameSpec = new LoanSpecification(new SearchCriteria("game.id", ":", idGame));
         LoanSpecification clientSpec = new LoanSpecification(new SearchCriteria("clients.id", ":", idClient));
-        LoanSpecification dateStartSpec = new LoanSpecification(new SearchCriteria("dateStart", "<=", date));
-        LoanSpecification dateEndSpec = new LoanSpecification(new SearchCriteria("dateEnd", ">=", date));
+        LoanSpecification dateStartSpec = new LoanSpecification(new SearchCriteria("dateStart", ">=", date));
+        LoanSpecification dateEndSpec = new LoanSpecification(new SearchCriteria("dateEnd", "<=", date));
 
         // Combina las especificaciones teniendo en cuenta la navegación de propiedades
         Specification<Loan> spec = Specification.where(gameSpec).and(clientSpec).and(dateStartSpec).and(dateEndSpec);
