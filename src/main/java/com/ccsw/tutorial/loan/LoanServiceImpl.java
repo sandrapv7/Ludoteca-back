@@ -68,9 +68,14 @@ public class LoanServiceImpl implements LoanService {
         long diffMilliSec = Math.abs(dto.getDateEnd().getTime() - dto.getDateStart().getTime());
         long diffDays = TimeUnit.DAYS.convert(diffMilliSec, TimeUnit.MILLISECONDS);
         if (diffDays > 14) {
-            throw new Exception("El período de préstamo no puede ser mayor a 14 días");
+            throw new Exception("El periodo de préstamo no puede ser mayor a 14 días");
         }
 
+        List<Loan> existingLoansStart = find(dto.getGame().getId(), null, dto.getDateStart());
+        List<Loan> existingLoansEnd = find(dto.getGame().getId(), null, dto.getDateEnd());
+        if (!existingLoansEnd.isEmpty() || !existingLoansStart.isEmpty()) {
+            throw new Exception("El juego ya está prestado a otro cliente en el periodo de tiempo seleccionado.");
+        }
         BeanUtils.copyProperties(dto, loan, "client", "game");
         loan.setGame(gameService.get(dto.getGame().getId()));
         loan.setClient(clientsService.get(dto.getClient().getId()));
