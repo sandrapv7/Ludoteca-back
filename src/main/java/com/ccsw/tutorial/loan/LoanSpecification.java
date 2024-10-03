@@ -22,10 +22,20 @@ public class LoanSpecification implements Specification<Loan> {
             Path<String> path = getPath(root);
             if (path.getJavaType() == String.class) {
                 return builder.like(path, "%" + criteria.getValue() + "%");
-            } else if (criteria.getOperation().equalsIgnoreCase(">=")) {
-                return builder.greaterThanOrEqualTo(root.<String>get(criteria.getKey()), criteria.getValue().toString());
-            } else if (criteria.getOperation().equalsIgnoreCase("<=")) {
-                return builder.lessThanOrEqualTo(root.<String>get(criteria.getKey()), criteria.getValue().toString());
+            } else {
+                return builder.equal(path, criteria.getValue());
+            }
+        } else if (criteria.getOperation().equalsIgnoreCase("<=") && criteria.getValue() != null) {
+            Path<String> path = getPath(root);
+            if (path.getJavaType() == String.class) {
+                return builder.like(path, "%" + criteria.getValue() + "%");
+            } else {
+                return builder.equal(path, criteria.getValue());
+            }
+        } else if (criteria.getOperation().equalsIgnoreCase(">=") && criteria.getValue() != null) {
+            Path<String> path = getPath(root);
+            if (path.getJavaType() == String.class) {
+                return builder.like(path, "%" + criteria.getValue() + "%");
             } else {
                 return builder.equal(path, criteria.getValue());
             }
