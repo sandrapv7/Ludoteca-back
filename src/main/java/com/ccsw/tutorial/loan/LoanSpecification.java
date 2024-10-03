@@ -5,6 +5,8 @@ import com.ccsw.tutorial.loan.model.Loan;
 import jakarta.persistence.criteria.*;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.util.Date;
+
 public class LoanSpecification implements Specification<Loan> {
 
     private static final long serialVersionUID = 1L;
@@ -26,19 +28,10 @@ public class LoanSpecification implements Specification<Loan> {
                 return builder.equal(path, criteria.getValue());
             }
         } else if (criteria.getOperation().equalsIgnoreCase("<=") && criteria.getValue() != null) {
-            Path<String> path = getPath(root);
-            if (path.getJavaType() == String.class) {
-                return builder.like(path, "%" + criteria.getValue() + "%");
-            } else {
-                return builder.equal(path, criteria.getValue());
-            }
+            return builder.lessThanOrEqualTo(root.get(criteria.getKey()), (Date) criteria.getValue());
+
         } else if (criteria.getOperation().equalsIgnoreCase(">=") && criteria.getValue() != null) {
-            Path<String> path = getPath(root);
-            if (path.getJavaType() == String.class) {
-                return builder.like(path, "%" + criteria.getValue() + "%");
-            } else {
-                return builder.equal(path, criteria.getValue());
-            }
+            return builder.greaterThanOrEqualTo(root.get(criteria.getKey()), (Date) criteria.getValue());
         }
         return null;
     }
