@@ -27,7 +27,7 @@ public interface LoanService {
      * Guardar un prestamo.
      * @param dto información del prestamo.
      */
-    void save(LoanDto dto);
+    void save(LoanDto dto) throws Exception;
 
     void delete(Long id) throws Exception;
 

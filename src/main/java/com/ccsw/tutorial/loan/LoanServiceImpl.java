@@ -56,9 +56,13 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
-    public void save(LoanDto dto) {
+    public void save(LoanDto dto) throws Exception {
         Loan loan;
         loan = new Loan();
+
+        if (dto.getDateEnd().before(dto.getDateStart())) {
+            throw new Exception("La fecha de fin no puede ser anterior a la fecha de inicio");
+        }
 
         BeanUtils.copyProperties(dto, loan, "client", "game");
         loan.setGame(gameService.get(dto.getGame().getId()));

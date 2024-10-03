@@ -59,7 +59,7 @@ public class LoanController {
      */
     @Operation(summary = "Save", description = "Method that saves a loan")
     @RequestMapping(path = { "" }, method = RequestMethod.PUT)
-    public void save(@RequestBody LoanDto dto) {
+    public void save(@RequestBody LoanDto dto) throws Exception {
         loanService.save(dto);
     }
 
