@@ -1,6 +1,6 @@
-INSERT INTO clients(name) VALUES ('SANDRA');
-INSERT INTO clients(name) VALUES ('MARIA');
-INSERT INTO clients(name) VALUES ('ONA');
+INSERT INTO clients(name) VALUES ('Sandra');
+INSERT INTO clients(name) VALUES ('Maria');
+INSERT INTO clients(name) VALUES ('Ona');
 
 INSERT INTO category(name) VALUES ('Eurogames');
 INSERT INTO category(name) VALUES ('Ameritrash');
@@ -20,4 +20,5 @@ INSERT INTO game(title, age, category_id, author_id) VALUES ('Barrage', '14', 1,
 INSERT INTO game(title, age, category_id, author_id) VALUES ('Los viajes de Marco Polo', '12', 1, 3);
 INSERT INTO game(title, age, category_id, author_id) VALUES ('Azul', '8', 3, 5);
 
-INSERT INTO loan(game_id, clients_id, date_start, date_end) VALUES (1, 1, '2024-03-03', '2024-03-06');
+INSERT INTO loan(game_id, clients_id, date_start, date_end) VALUES (1, 1, '2024-10-03', '2024-10-06');
+INSERT INTO loan(game_id, clients_id, date_start, date_end) VALUES (2, 3, '2024-10-03', '2024-10-13');
