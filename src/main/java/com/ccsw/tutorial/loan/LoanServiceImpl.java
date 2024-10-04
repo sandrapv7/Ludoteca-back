@@ -84,9 +84,7 @@ public class LoanServiceImpl implements LoanService {
         end.setTime(dto.getDateEnd());
         for (Date date = start.getTime(); start.before(end); start.add(Calendar.DATE, 1), date = start.getTime()) {
             existingLoansStart = find(null, dto.getClient().getId(), date);
-            existingLoansEnd = find(null, dto.getClient().getId(), date);
-            if (existingLoansEnd.size() > 2 || existingLoansStart.size() > 2) {
-
+            if (existingLoansStart.size() > 2) {
                 throw new Exception("Este cliente ya tiene un juego prestado el mismo día.");
             }
         }

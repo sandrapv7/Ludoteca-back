@@ -44,14 +44,6 @@ public class LoanController {
         return new PageImpl<>(page.getContent().stream().map(e -> mapper.map(e, LoanDto.class)).collect(Collectors.toList()), page.getPageable(), page.getTotalElements());
     }
 
-    /*
-    @Operation(summary = "Find2", description = "Method that return a list of Categories")
-    @RequestMapping(path = "", method = RequestMethod.GET)
-    public List<LoanDto> findAll() {
-        List<Loan> loans = loanService.findAll();
-        return loans.stream().map(e -> mapper.map(e, LoanDto.class)).collect(Collectors.toList());
-    }*/
-
     /**
      * Método para crear o actualizar un {@link Loan}
      *
