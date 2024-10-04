@@ -8,6 +8,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * @author sandra
+ *
+ */
 @Service
 @Transactional
 public class ClientsServiceImpl implements ClientsService {

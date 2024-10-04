@@ -5,6 +5,10 @@ import com.ccsw.tutorial.clients.model.ClientsDto;
 
 import java.util.List;
 
+/**
+ * @author sandra
+ *
+ */
 public interface ClientsService {
 
     /**
@@ -31,5 +35,11 @@ public interface ClientsService {
      */
     void delete(Long id) throws Exception;
 
+    /**
+     * Recupera un {@link Clients} a partir de su ID
+     *
+     * @param id PK de la entidad
+     * @return {@link Clients}
+     */
     Clients get(Long id);
 }

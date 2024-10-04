@@ -2,6 +2,9 @@ package com.ccsw.tutorial.common.exceptions;
 
 import org.springframework.http.HttpStatus;
 
+/**
+ * Clase que representa un error en la respuesta de una petición.
+ */
 public class ErrorResponse {
 
     private HttpStatus status;

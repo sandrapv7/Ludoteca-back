@@ -7,6 +7,9 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.util.Date;
 
+/**
+ * @author sandra
+ */
 public class LoanSpecification implements Specification<Loan> {
 
     private static final long serialVersionUID = 1L;

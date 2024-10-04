@@ -18,6 +18,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * @author sandra
+ */
 @Service
 @Transactional
 public class LoanServiceImpl implements LoanService {
@@ -44,12 +47,6 @@ public class LoanServiceImpl implements LoanService {
 
         return this.loanRepository.findAll(spec);
 
-    }
-
-    @Override
-    public List<Loan> findAll() {
-
-        return (List<Loan>) this.loanRepository.findAll();
     }
 
     @Override
@@ -94,7 +91,7 @@ public class LoanServiceImpl implements LoanService {
         loan.setClient(clientsService.get(dto.getClient().getId()));
         this.loanRepository.save(loan);
     }
-
+    
     @Override
     public void delete(Long id) throws Exception {
         if (get(id) == null) {

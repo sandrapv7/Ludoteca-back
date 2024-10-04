@@ -15,6 +15,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * @author sandra
+ */
 @Tag(name = "Loan", description = "API of Loan")
 @RequestMapping(value = "/loan")
 @RestController
