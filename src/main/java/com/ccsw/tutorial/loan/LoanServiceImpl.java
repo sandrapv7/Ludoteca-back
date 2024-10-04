@@ -99,7 +99,7 @@ public class LoanServiceImpl implements LoanService {
 
     @Override
     public void delete(Long id) throws Exception {
-        if (this.get(id) == null) {
+        if (get(id) == null) {
             throw new Exception("Not Exists");
         }
 

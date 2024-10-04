@@ -1,6 +1,6 @@
-INSERT INTO clients(name) VALUES ('SANDRA');
-INSERT INTO clients(name) VALUES ('MARIA');
-INSERT INTO clients(name) VALUES ('ONA');
+INSERT INTO clients(name) VALUES ('Sandra');
+INSERT INTO clients(name) VALUES ('Maria');
+INSERT INTO clients(name) VALUES ('Ona');
 
 INSERT INTO category(name) VALUES ('Eurogames');
 INSERT INTO category(name) VALUES ('Ameritrash');
