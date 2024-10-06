@@ -80,9 +80,9 @@ public class LoanServiceImpl implements LoanService {
         Calendar end = Calendar.getInstance();
         end.setTime(dto.getDateEnd());
         for (Date date = start.getTime(); start.before(end); start.add(Calendar.DATE, 1), date = start.getTime()) {
-            existingLoansStart = find(null, dto.getClient().getId(), date);
-            if (existingLoansStart.size() > 2) {
-                throw new Exception("Este cliente ya tiene un juego prestado el mismo día.");
+            List<Loan> existingLoansForClient = find(null, dto.getClient().getId(), date);
+            if (existingLoansForClient.size() >= 2) {
+                throw new Exception("Este cliente ya tiene dos juegos prestados el mismo día.");
             }
         }
 
@@ -91,7 +91,7 @@ public class LoanServiceImpl implements LoanService {
         loan.setClient(clientsService.get(dto.getClient().getId()));
         this.loanRepository.save(loan);
     }
-    
+
     @Override
     public void delete(Long id) throws Exception {
         if (get(id) == null) {
