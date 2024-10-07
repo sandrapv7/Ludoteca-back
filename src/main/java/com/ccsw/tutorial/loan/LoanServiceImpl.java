@@ -49,8 +49,14 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
-    public Page<Loan> findPage(LoanSearchDto dto) {
-        return this.loanRepository.findAll(dto.getPageable().getPageable());
+    public Page<Loan> findLoans(Long idGame, Long idClient, Date date, LoanSearchDto dto) {
+        LoanSpecification gameSpec = new LoanSpecification(new SearchCriteria("game.id", ":", idGame));
+        LoanSpecification clientSpec = new LoanSpecification(new SearchCriteria("clients.id", ":", idClient));
+        LoanSpecification dateStartSpec = new LoanSpecification(new SearchCriteria("dateStart", "<=", date));
+        LoanSpecification dateEndSpec = new LoanSpecification(new SearchCriteria("dateEnd", ">=", date));
+
+        Specification<Loan> spec = Specification.where(gameSpec).and(clientSpec).and(dateStartSpec).and(dateEndSpec);
+        return this.loanRepository.findAll(spec, dto.getPageable().getPageable());
     }
 
     @Override

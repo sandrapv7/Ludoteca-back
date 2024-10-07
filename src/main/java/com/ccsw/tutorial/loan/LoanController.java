@@ -12,7 +12,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
-import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -30,20 +29,12 @@ public class LoanController {
     @Autowired
     ModelMapper mapper;
 
-    @Operation(summary = "Find", description = "Method that return a filtered list of loans")
-    @RequestMapping(path = "", method = RequestMethod.GET)
-    public List<LoanDto> find(@RequestParam(value = "idGame", required = false) Long idGame, @RequestParam(value = "idClient", required = false) Long idClient, @RequestParam(value = "date", required = false) Date date) {
-        List<Loan> loans = loanService.find(idGame, idClient, date);
-        return loans.stream().map(e -> mapper.map(e, LoanDto.class)).collect(Collectors.toList());
-    }
-
     @Operation(summary = "Find Page", description = "Method that return a page of Loans")
     @RequestMapping(path = "", method = RequestMethod.POST)
-    public Page<LoanDto> findPage(@RequestBody LoanSearchDto dto) {
+    public Page<LoanDto> findLoans(@RequestBody LoanSearchDto dto, @RequestParam(value = "idGame", required = false) Long idGame, @RequestParam(value = "idClient", required = false) Long idClient,
+            @RequestParam(value = "date", required = false) Date date) {
         //Recibo los datos como una entidad
-        Page<Loan> page = loanService.findPage(dto);
-        //Se crea una nueva página de de AuthorDto. Se obtiene el contenido de la página de autores, se convierte
-        //cada autor en un dto y se recopila en una lista.
+        Page<Loan> page = loanService.findLoans(idGame, idClient, date, dto);
         return new PageImpl<>(page.getContent().stream().map(e -> mapper.map(e, LoanDto.class)).collect(Collectors.toList()), page.getPageable(), page.getTotalElements());
     }
 

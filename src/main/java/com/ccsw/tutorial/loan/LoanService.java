@@ -14,7 +14,7 @@ import java.util.List;
 public interface LoanService {
 
     /**
-     * Recupera una listado de prestamos filtrando opcionalmente por juego, cliente o fecha.
+     * Recupera un listado de prestamos filtrando opcionalmente por juego, cliente o fecha.
      * @param idGame PK del juego
      * @param idClient PK del cliente
      * @param date fecha
@@ -22,13 +22,7 @@ public interface LoanService {
      */
     List<Loan> find(Long idGame, Long idClient, Date date);
 
-    /**
-     * Método para recuperar un listado paginado de {@link Loan}
-     *
-     * @param dto dto de búsqueda
-     * @return {@link Page} de {@link Loan}
-     */
-    Page<Loan> findPage(LoanSearchDto dto);
+    Page<Loan> findLoans(Long idGame, Long idClient, Date date, LoanSearchDto dto);
 
     /**
      * Guardar un prestamo.

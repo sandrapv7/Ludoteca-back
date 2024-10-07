@@ -42,8 +42,8 @@ public class ClientsIT {
     }
 
     public static final Long NEW_CLIENT_ID = 4L;
-    public static final String NEW_CLIENT_NAME = "SAM";
-    public static final String EXISTS_NAME = "SANDRA";
+    public static final String NEW_CLIENT_NAME = "Sam";
+    public static final String EXISTS_NAME = "Sandra";
 
     @Test
     public void saveWithoutIdShouldCreateNewClient() {
@@ -96,7 +96,7 @@ public class ClientsIT {
     public static final Long DELETE_CATEGORY_ID = 2L;
 
     @Test
-    public void deleteWithExistsIdShouldDeleteCategory() {
+    public void deleteWithExistsIdShouldDeleteClient() {
         restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + DELETE_CATEGORY_ID, HttpMethod.DELETE, null, Void.class);
         ResponseEntity<List<ClientsDto>> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.GET, null, responseType);
         assertNotNull(response);

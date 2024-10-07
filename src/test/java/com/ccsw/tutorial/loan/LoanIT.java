@@ -1,19 +1,13 @@
 package com.ccsw.tutorial.loan;
 
-import com.ccsw.tutorial.author.model.AuthorDto;
 import com.ccsw.tutorial.loan.model.LoanDto;
-import com.ccsw.tutorial.loan.model.Loan;
-import com.ccsw.tutorial.category.model.CategoryDto;
-import com.ccsw.tutorial.game.model.GameDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -53,11 +47,12 @@ public class LoanIT {
 
     public static final Long NOT_EXISTS_GAME_ID = 0L;
 
-
     private static final String CLIENT_ID_PARAM = "idClient";
+
     private static final String GAME_ID_PARAM = "idGame";
 
     private static final String DATE_PARAM = "date";
+
     private static final Date DATE_END = new Date();
 
     @LocalServerPort
@@ -70,13 +65,8 @@ public class LoanIT {
     };
 
     private String getUrlWithParams() {
-
-        return UriComponentsBuilder.fromHttpUrl(LOCALHOST + port + SERVICE_PATH)
-                .queryParam(GAME_ID_PARAM, "{" + GAME_ID_PARAM+ "}")
-                .queryParam(CLIENT_ID_PARAM, "{" + CLIENT_ID_PARAM + "}")
-                .queryParam(DATE_PARAM, "{" + DATE_PARAM + "}")
-                .encode()
-                .toUriString();
+        return UriComponentsBuilder.fromHttpUrl(LOCALHOST + port + SERVICE_PATH).queryParam(GAME_ID_PARAM, "{" + GAME_ID_PARAM + "}").queryParam(CLIENT_ID_PARAM, "{" + CLIENT_ID_PARAM + "}").queryParam(DATE_PARAM, "{" + DATE_PARAM + "}")
+                .encode().toUriString();
     }
 
     @Test
@@ -143,5 +133,67 @@ public class LoanIT {
         assertEquals(LOANS_WITH_FILTER, response.getBody().size());
     }
 
+    @Test
+    public void findWithClientandGameShouldReturn() {
+
+        int LOANS_WITH_FILTER = 1;
+
+        Map<String, Object> params = new HashMap<>();
+        params.put(GAME_ID_PARAM, EXISTS_GAME_ID);
+        params.put(CLIENT_ID_PARAM, EXISTS_CLIENT_ID);
+        params.put(DATE_PARAM, null);
+
+        ResponseEntity<List<LoanDto>> response = restTemplate.exchange(getUrlWithParams(), HttpMethod.GET, null, responseType, params);
+
+        assertNotNull(response);
+        assertEquals(LOANS_WITH_FILTER, response.getBody().size());
+    }
+
+    @Test
+    public void findWithClientandDateShouldReturn() {
+
+        int LOANS_WITH_FILTER = 1;
+
+        Map<String, Object> params = new HashMap<>();
+        params.put(GAME_ID_PARAM, null);
+        params.put(CLIENT_ID_PARAM, 3L);
+        params.put(DATE_PARAM, DATE_EXISTS);
+
+        ResponseEntity<List<LoanDto>> response = restTemplate.exchange(getUrlWithParams(), HttpMethod.GET, null, responseType, params);
+
+        assertNotNull(response);
+        assertEquals(LOANS_WITH_FILTER, response.getBody().size());
+    }
+
+    @Test
+    public void findWithClientandDateandGameShouldReturn() {
+
+        int LOANS_WITH_FILTER = 1;
+
+        Map<String, Object> params = new HashMap<>();
+        params.put(GAME_ID_PARAM, 2L);
+        params.put(CLIENT_ID_PARAM, 3L);
+        params.put(DATE_PARAM, DATE_EXISTS);
+
+        ResponseEntity<List<LoanDto>> response = restTemplate.exchange(getUrlWithParams(), HttpMethod.GET, null, responseType, params);
+
+        assertNotNull(response);
+        assertEquals(LOANS_WITH_FILTER, response.getBody().size());
+    }
+
+    @Test
+    public void findWithDateandGameShouldReturn() {
+
+        int LOANS_WITH_FILTER = 1;
+        Map<String, Object> params = new HashMap<>();
+        params.put(GAME_ID_PARAM, 2L);
+        params.put(CLIENT_ID_PARAM, null);
+        params.put(DATE_PARAM, DATE_EXISTS);
+
+        ResponseEntity<List<LoanDto>> response = restTemplate.exchange(getUrlWithParams(), HttpMethod.GET, null, responseType);
+
+        assertNotNull(response);
+        assertEquals(LOANS_WITH_FILTER, response.getBody().size());
+    }
 
 }

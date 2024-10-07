@@ -80,7 +80,7 @@ public class ClientsTest {
             clientsService.save(ID_CLIENT_EXISTS, clientsDto);
         });
 
-        assertTrue(exception.getMessage().contains("Ja existeix un usuari amb aquest nom"));
+        assertTrue(exception.getMessage().contains("Ya existe un cliente con ese nombre."));
         verify(clientsRepository).findByName(CLIENT_NAME);
         verify(clientsRepository, org.mockito.Mockito.never()).save(client);
     }
