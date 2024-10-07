@@ -74,16 +74,62 @@ public class LoanIT {
     }
 
     @Test
-    public void findWithoutFiltersShouldReturnAllPrestamosInPage() {
-        LoanSearchDto loanDto = new LoanSearchDto();
-        loanDto.setPageable(new PageableRequest(0, PAGE_SIZE));
+    public void findWithoutFiltersShouldReturnAllLoansInPage() {
+        LoanSearchDto searchDto = new LoanSearchDto();
+        searchDto.setPageable(new PageableRequest(0, PAGE_SIZE));
         Map<String, Object> params = new HashMap<>();
         params.put(GAME_ID_PARAM, null);
         params.put(CLIENT_ID_PARAM, null);
         params.put(DATE_PARAM, null);
 
-        ResponseEntity<ResponsePage<LoanDto>> response = restTemplate.exchange(getUrlWithParams(), HttpMethod.POST, new HttpEntity<>(loanDto), responseTypePage, params);
+        ResponseEntity<ResponsePage<LoanDto>> response = restTemplate.exchange(getUrlWithParams(), HttpMethod.POST, new HttpEntity<>(searchDto), responseTypePage, params);
         assertNotNull(response);
+        assertEquals(TOTAL_LOANS, response.getBody().getTotalElements());
+        assertEquals(PAGE_SIZE, response.getBody().getContent().size());
+    }
+
+    @Test
+    public void findWithGameShouldReturnGamesInPage() {
+        LoanSearchDto searchDto = new LoanSearchDto();
+        searchDto.setPageable(new PageableRequest(0, PAGE_SIZE));
+        Map<String, Object> params = new HashMap<>();
+        params.put(GAME_ID_PARAM, EXISTS_GAME_ID);
+        params.put(CLIENT_ID_PARAM, null);
+        params.put(DATE_PARAM, null);
+
+        ResponseEntity<ResponsePage<LoanDto>> response = restTemplate.exchange(getUrlWithParams(), HttpMethod.POST, new HttpEntity<>(searchDto), responseTypePage, params);
+        assertNotNull(response);
+        assertEquals(3, response.getBody().getTotalElements());
+        assertEquals(PAGE_SIZE, response.getBody().getContent().size());
+    }
+
+    @Test
+    public void findWithClientShouldReturnGamesInPage() {
+        LoanSearchDto searchDto = new LoanSearchDto();
+        searchDto.setPageable(new PageableRequest(0, PAGE_SIZE));
+        Map<String, Object> params = new HashMap<>();
+        params.put(GAME_ID_PARAM, null);
+        params.put(CLIENT_ID_PARAM, EXISTS_CLIENT_ID);
+        params.put(DATE_PARAM, null);
+
+        ResponseEntity<ResponsePage<LoanDto>> response = restTemplate.exchange(getUrlWithParams(), HttpMethod.POST, new HttpEntity<>(searchDto), responseTypePage, params);
+        assertNotNull(response);
+        assertEquals(2, response.getBody().getTotalElements());
+        assertEquals(PAGE_SIZE, response.getBody().getContent().size());
+    }
+
+    @Test
+    public void findWithDateShouldReturnGamesInPage() {
+        LoanSearchDto searchDto = new LoanSearchDto();
+        searchDto.setPageable(new PageableRequest(0, PAGE_SIZE));
+        Map<String, Object> params = new HashMap<>();
+        params.put(GAME_ID_PARAM, null);
+        params.put(CLIENT_ID_PARAM, null);
+        params.put(DATE_PARAM, DATE_EXISTS);
+
+        ResponseEntity<ResponsePage<LoanDto>> response = restTemplate.exchange(getUrlWithParams(), HttpMethod.POST, new HttpEntity<>(searchDto), responseTypePage, params);
+        assertNotNull(response);
+        assertEquals(2, response.getBody().getTotalElements());
         assertEquals(PAGE_SIZE, response.getBody().getContent().size());
     }
 
