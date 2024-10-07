@@ -22,3 +22,7 @@ INSERT INTO game(title, age, category_id, author_id) VALUES ('Azul', '8', 3, 5);
 
 INSERT INTO loan(game_id, clients_id, date_start, date_end) VALUES (1, 1, '2024-10-03', '2024-10-06');
 INSERT INTO loan(game_id, clients_id, date_start, date_end) VALUES (2, 3, '2024-10-03', '2024-10-13');
+INSERT INTO loan(game_id, clients_id, date_start, date_end) VALUES (1, 2, '2024-10-01', '2024-10-02');
+INSERT INTO loan(game_id, clients_id, date_start, date_end) VALUES (2, 1, '2024-10-10', '2024-10-20');
+INSERT INTO loan(game_id, clients_id, date_start, date_end) VALUES (1, 2, '2024-10-01', '2024-10-02');
+INSERT INTO loan(game_id, clients_id, date_start, date_end) VALUES (2, 2, '2024-10-29', '2024-10-31');
