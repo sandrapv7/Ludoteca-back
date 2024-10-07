@@ -1,12 +1,16 @@
 package com.ccsw.tutorial.loan;
 
+import com.ccsw.tutorial.common.pagination.PageableRequest;
+import com.ccsw.tutorial.config.ResponsePage;
 import com.ccsw.tutorial.loan.model.LoanDto;
+import com.ccsw.tutorial.loan.model.LoanSearchDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
@@ -16,7 +20,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -53,7 +56,8 @@ public class LoanIT {
 
     private static final String DATE_PARAM = "date";
 
-    private static final Date DATE_END = new Date();
+    private static final int TOTAL_LOANS = 6;
+    private static final int PAGE_SIZE = 5;
 
     @LocalServerPort
     private int port;
@@ -61,7 +65,7 @@ public class LoanIT {
     @Autowired
     private TestRestTemplate restTemplate;
 
-    ParameterizedTypeReference<List<LoanDto>> responseType = new ParameterizedTypeReference<List<LoanDto>>() {
+    ParameterizedTypeReference<ResponsePage<LoanDto>> responseTypePage = new ParameterizedTypeReference<ResponsePage<LoanDto>>() {
     };
 
     private String getUrlWithParams() {
@@ -70,130 +74,17 @@ public class LoanIT {
     }
 
     @Test
-    public void findWithoutFiltersShouldReturnAllLoansInDB() {
-
-        int LOANS_WITH_FILTER = 2;
-
+    public void findWithoutFiltersShouldReturnAllPrestamosInPage() {
+        LoanSearchDto loanDto = new LoanSearchDto();
+        loanDto.setPageable(new PageableRequest(0, PAGE_SIZE));
         Map<String, Object> params = new HashMap<>();
         params.put(GAME_ID_PARAM, null);
         params.put(CLIENT_ID_PARAM, null);
         params.put(DATE_PARAM, null);
 
-        ResponseEntity<List<LoanDto>> response = restTemplate.exchange(getUrlWithParams(), HttpMethod.GET, null, responseType, params);
-
+        ResponseEntity<ResponsePage<LoanDto>> response = restTemplate.exchange(getUrlWithParams(), HttpMethod.POST, new HttpEntity<>(loanDto), responseTypePage, params);
         assertNotNull(response);
-        assertEquals(LOANS_WITH_FILTER, response.getBody().size());
-    }
-
-    @Test
-    public void findWithGameShouldReturn() {
-
-        int LOANS_WITH_FILTER = 1;
-
-        Map<String, Object> params = new HashMap<>();
-        params.put(GAME_ID_PARAM, EXISTS_GAME_ID);
-        params.put(CLIENT_ID_PARAM, null);
-        params.put(DATE_PARAM, null);
-
-        ResponseEntity<List<LoanDto>> response = restTemplate.exchange(getUrlWithParams(), HttpMethod.GET, null, responseType, params);
-
-        assertNotNull(response);
-        assertEquals(LOANS_WITH_FILTER, response.getBody().size());
-    }
-
-    @Test
-    public void findWithClientShouldReturn() {
-
-        int LOANS_WITH_FILTER = 1;
-
-        Map<String, Object> params = new HashMap<>();
-        params.put(GAME_ID_PARAM, null);
-        params.put(CLIENT_ID_PARAM, EXISTS_CLIENT_ID);
-        params.put(DATE_PARAM, null);
-
-        ResponseEntity<List<LoanDto>> response = restTemplate.exchange(getUrlWithParams(), HttpMethod.GET, null, responseType, params);
-
-        assertNotNull(response);
-        assertEquals(LOANS_WITH_FILTER, response.getBody().size());
-    }
-
-    @Test
-    public void findWithDateShouldReturn() {
-
-        int LOANS_WITH_FILTER = 1;
-
-        Map<String, Object> params = new HashMap<>();
-        params.put(GAME_ID_PARAM, null);
-        params.put(CLIENT_ID_PARAM, null);
-        params.put(DATE_PARAM, DATE_EXISTS);
-
-        ResponseEntity<List<LoanDto>> response = restTemplate.exchange(getUrlWithParams(), HttpMethod.GET, null, responseType, params);
-
-        assertNotNull(response);
-        assertEquals(LOANS_WITH_FILTER, response.getBody().size());
-    }
-
-    @Test
-    public void findWithClientandGameShouldReturn() {
-
-        int LOANS_WITH_FILTER = 1;
-
-        Map<String, Object> params = new HashMap<>();
-        params.put(GAME_ID_PARAM, EXISTS_GAME_ID);
-        params.put(CLIENT_ID_PARAM, EXISTS_CLIENT_ID);
-        params.put(DATE_PARAM, null);
-
-        ResponseEntity<List<LoanDto>> response = restTemplate.exchange(getUrlWithParams(), HttpMethod.GET, null, responseType, params);
-
-        assertNotNull(response);
-        assertEquals(LOANS_WITH_FILTER, response.getBody().size());
-    }
-
-    @Test
-    public void findWithClientandDateShouldReturn() {
-
-        int LOANS_WITH_FILTER = 1;
-
-        Map<String, Object> params = new HashMap<>();
-        params.put(GAME_ID_PARAM, null);
-        params.put(CLIENT_ID_PARAM, 3L);
-        params.put(DATE_PARAM, DATE_EXISTS);
-
-        ResponseEntity<List<LoanDto>> response = restTemplate.exchange(getUrlWithParams(), HttpMethod.GET, null, responseType, params);
-
-        assertNotNull(response);
-        assertEquals(LOANS_WITH_FILTER, response.getBody().size());
-    }
-
-    @Test
-    public void findWithClientandDateandGameShouldReturn() {
-
-        int LOANS_WITH_FILTER = 1;
-
-        Map<String, Object> params = new HashMap<>();
-        params.put(GAME_ID_PARAM, 2L);
-        params.put(CLIENT_ID_PARAM, 3L);
-        params.put(DATE_PARAM, DATE_EXISTS);
-
-        ResponseEntity<List<LoanDto>> response = restTemplate.exchange(getUrlWithParams(), HttpMethod.GET, null, responseType, params);
-
-        assertNotNull(response);
-        assertEquals(LOANS_WITH_FILTER, response.getBody().size());
-    }
-
-    @Test
-    public void findWithDateandGameShouldReturn() {
-
-        int LOANS_WITH_FILTER = 1;
-        Map<String, Object> params = new HashMap<>();
-        params.put(GAME_ID_PARAM, 2L);
-        params.put(CLIENT_ID_PARAM, null);
-        params.put(DATE_PARAM, DATE_EXISTS);
-
-        ResponseEntity<List<LoanDto>> response = restTemplate.exchange(getUrlWithParams(), HttpMethod.GET, null, responseType);
-
-        assertNotNull(response);
-        assertEquals(LOANS_WITH_FILTER, response.getBody().size());
+        assertEquals(PAGE_SIZE, response.getBody().getContent().size());
     }
 
 }
