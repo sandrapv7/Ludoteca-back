@@ -42,7 +42,6 @@ public class LoanServiceImpl implements LoanService {
         LoanSpecification dateStartSpec = new LoanSpecification(new SearchCriteria("dateStart", "<=", date));
         LoanSpecification dateEndSpec = new LoanSpecification(new SearchCriteria("dateEnd", ">=", date));
 
-        // Combina las especificaciones teniendo en cuenta la navegación de propiedades
         Specification<Loan> spec = Specification.where(gameSpec).and(clientSpec).and(dateStartSpec).and(dateEndSpec);
 
         return this.loanRepository.findAll(spec);
