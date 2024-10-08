@@ -112,7 +112,7 @@ public class LoanIT {
     }
 
     @Test
-    public void findWithClientShouldReturnGamesInPage() {
+    public void findWithGameShouldReturnGamesInPage() {
         LoanSearchDto searchDto = new LoanSearchDto();
         searchDto.setPageable(new PageableRequest(0, 5)); // Usa una página válida
 
@@ -124,7 +124,25 @@ public class LoanIT {
         ResponseEntity<ResponsePage<LoanDto>> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.POST, new HttpEntity<>(searchDto), responseTypePage, params);
         assertNotNull(response);
         assertNotNull(response.getBody());
-        assertEquals(3, response.getBody().getTotalElements());
+        System.out.println(response.getBody());
+        assertEquals(3, response.getBody().getNumberOfElements());
+    }
+
+    @Test
+    public void findWithClientsShouldReturnClientsInPage() {
+        LoanSearchDto searchDto = new LoanSearchDto();
+        searchDto.setPageable(new PageableRequest(0, 5)); // Usa una página válida
+
+        Map<String, Object> params = new HashMap<>();
+        params.put(GAME_ID_PARAM, null);
+        params.put(CLIENT_ID_PARAM, 1L);
+        params.put(DATE_PARAM, null);
+
+        ResponseEntity<ResponsePage<LoanDto>> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.POST, new HttpEntity<>(searchDto), responseTypePage, params);
+        assertNotNull(response);
+        assertNotNull(response.getBody());
+        System.out.println(response.getBody());
+        assertEquals(2, response.getBody().getNumberOfElements());
     }
 
     @Test
