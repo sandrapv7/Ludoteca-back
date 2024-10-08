@@ -12,6 +12,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -20,6 +21,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -56,7 +58,7 @@ public class LoanIT {
 
     private static final String DATE_PARAM = "date";
 
-    private static final int TOTAL_LOANS = 6;
+    private static final int TOTAL_LOANS = 5;
     private static final int PAGE_SIZE = 5;
 
     @LocalServerPort
@@ -76,7 +78,7 @@ public class LoanIT {
     @Test
     public void findWithoutFiltersShouldReturnAllLoansInPage() {
         LoanSearchDto searchDto = new LoanSearchDto();
-        searchDto.setPageable(new PageableRequest(0, PAGE_SIZE));
+        searchDto.setPageable(new PageableRequest(1, 5));
         Map<String, Object> params = new HashMap<>();
         params.put(GAME_ID_PARAM, null);
         params.put(CLIENT_ID_PARAM, null);
@@ -131,6 +133,23 @@ public class LoanIT {
         assertNotNull(response);
         assertEquals(2, response.getBody().getTotalElements());
         assertEquals(PAGE_SIZE, response.getBody().getContent().size());
+    }
+
+    ParameterizedTypeReference<List<LoanDto>> responseType = new ParameterizedTypeReference<List<LoanDto>>() {
+    };
+
+    @Test
+    public void deleteWithExistsIdShouldDeleteLoan() {
+        restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + 1, HttpMethod.DELETE, null, Void.class);
+        ResponseEntity<List<LoanDto>> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.DELETE, null, responseType);
+        assertNotNull(response);
+        assertEquals(5, response.getBody().size());
+    }
+
+    @Test
+    public void deleteWithNotExistsIdShouldInternalError() {
+        ResponseEntity<?> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + 8, HttpMethod.DELETE, null, Void.class);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
 }
