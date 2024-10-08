@@ -21,7 +21,7 @@ public class ExceptionController extends ResponseEntityExceptionHandler {
      * @return Respuesta HTTP con el código de estado y el mensaje de la excepcion.
      */
 
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler(Exceptions.class)
     public ResponseEntity<ErrorResponse> handleException(Exception exception) {
         ErrorResponse error = new ErrorResponse(HttpStatus.BAD_REQUEST, exception.getMessage());
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);

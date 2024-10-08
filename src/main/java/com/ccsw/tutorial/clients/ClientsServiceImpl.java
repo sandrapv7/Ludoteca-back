@@ -2,6 +2,7 @@ package com.ccsw.tutorial.clients;
 
 import com.ccsw.tutorial.clients.model.Clients;
 import com.ccsw.tutorial.clients.model.ClientsDto;
+import com.ccsw.tutorial.common.exceptions.Exceptions;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,7 @@ public class ClientsServiceImpl implements ClientsService {
     @Override
     public void save(Long id, ClientsDto dto) throws Exception {
         if (this.clientsRepository.findByName(dto.getName()).isPresent()) {
-            throw new Exception("Ya existe un cliente con ese nombre.");
+            throw new Exceptions("Ya existe un cliente con ese nombre.");
         }
         Clients client;
         if (id == null) {
@@ -46,7 +47,7 @@ public class ClientsServiceImpl implements ClientsService {
     public void delete(Long id) throws Exception {
 
         if (this.get(id) == null) {
-            throw new Exception("Not Exists");
+            throw new Exceptions("Not Exists");
         }
         this.clientsRepository.deleteById(id);
     }
