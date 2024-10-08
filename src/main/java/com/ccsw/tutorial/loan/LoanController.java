@@ -33,7 +33,6 @@ public class LoanController {
     @RequestMapping(path = "", method = RequestMethod.POST)
     public Page<LoanDto> findLoans(@RequestBody LoanSearchDto dto, @RequestParam(value = "idGame", required = false) Long idGame, @RequestParam(value = "idClient", required = false) Long idClient,
             @RequestParam(value = "date", required = false) Date date) {
-        //Recibo los datos como una entidad
         Page<Loan> page = loanService.findLoans(idGame, idClient, date, dto);
         return new PageImpl<>(page.getContent().stream().map(e -> mapper.map(e, LoanDto.class)).collect(Collectors.toList()), page.getPageable(), page.getTotalElements());
     }
