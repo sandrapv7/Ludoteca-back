@@ -29,12 +29,10 @@ public class Loan {
     private Clients clients;
 
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Column(name = "date_start", nullable = false)
     private Date dateStart;
 
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Column(name = "date_end", nullable = false)
     private Date dateEnd;
 

@@ -66,12 +66,20 @@ public class ClientsIT {
 
     @Test
     public void saveWithExistsNameShouldInternalError() {
+        // Arrange
         ClientsDto dto = new ClientsDto();
-        dto.setName(EXISTS_NAME);
+        dto.setName("Sandra");
 
-        ResponseEntity<?> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.PUT, new HttpEntity<>(dto), Void.class);
+        // Act
+        ResponseEntity<?> response = restTemplate.exchange(
+                LOCALHOST + port + SERVICE_PATH,
+                HttpMethod.PUT,
+                new HttpEntity<>(dto),
+                Void.class
+        );
+
+        // Assert
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-
     }
 
     @Test
