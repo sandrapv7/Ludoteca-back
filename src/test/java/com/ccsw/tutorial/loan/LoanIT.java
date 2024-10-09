@@ -165,7 +165,7 @@ public class LoanIT {
 
     @Test
     public void deleteWithExistsIdShouldDeleteLoan() {
-        restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + 1, HttpMethod.DELETE, null, Void.class);
+        restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + 6, HttpMethod.DELETE, null, Void.class);
         ResponseEntity<List<LoanDto>> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.DELETE, null, responseType);
         assertNotNull(response);
         assertNotNull(response.getBody());

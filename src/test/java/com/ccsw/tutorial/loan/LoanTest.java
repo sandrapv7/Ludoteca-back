@@ -80,8 +80,11 @@ public class LoanTest {
         List<Loan> existingLoans = new ArrayList<>();
         when(loanService.find(gameDto.getId(), null, any())).thenReturn(existingLoans);
 
-        existingLoans.add(new Loan()); // Simulate existing loan
-        assertThrows(Exceptions.class, () -> loanService.save(dto));
+        existingLoans.add(new Loan());
+        Exception exception = assertThrows(Exceptions.class, () -> loanService.save(dto));
+        assertEquals("El juego ya está prestado a otro cliente en el periodo de tiempo seleccionado.", exception.getMessage());
+
+
     }
 
     @Test
@@ -100,11 +103,12 @@ public class LoanTest {
         clientsDto.setId(1L);
         dto.setClient(clientsDto);
 
-        List<Loan> existingLoans = new ArrayList<>();
-        existingLoans.add(new Loan());
-        existingLoans.add(new Loan());
+        Loan loan1 = new Loan();
+        Loan loan2 = new Loan();
+        List<Loan> existingLoans = Arrays.asList(loan1, loan2);
         when(loanService.find(null, clientsDto.getId(), any())).thenReturn(existingLoans);
-        assertThrows(Exceptions.class, () -> loanService.save(dto));
+        Exception exception = assertThrows(Exceptions.class, () -> loanService.save(dto));
+        assertEquals("Este cliente ya tiene dos juegos prestados el mismo día.", exception.getMessage());
     }
 
     @Test

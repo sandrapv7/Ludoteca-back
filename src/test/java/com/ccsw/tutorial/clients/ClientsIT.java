@@ -66,20 +66,16 @@ public class ClientsIT {
 
     @Test
     public void saveWithExistsNameShouldInternalError() {
-        // Arrange
         ClientsDto dto = new ClientsDto();
         dto.setName("Sandra");
 
-        // Act
         ResponseEntity<?> response = restTemplate.exchange(
                 LOCALHOST + port + SERVICE_PATH,
                 HttpMethod.PUT,
                 new HttpEntity<>(dto),
                 Void.class
         );
-
-        // Assert
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
     @Test
@@ -97,7 +93,7 @@ public class ClientsIT {
         dto.setName(EXISTS_NAME);
 
         ResponseEntity<?> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + NEW_CLIENT_ID, HttpMethod.PUT, new HttpEntity<>(dto), Void.class);
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 
     }
 
@@ -105,7 +101,7 @@ public class ClientsIT {
 
     @Test
     public void deleteWithExistsIdShouldDeleteClient() {
-        restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + DELETE_CATEGORY_ID, HttpMethod.DELETE, null, Void.class);
+        restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + "3", HttpMethod.DELETE, null, Void.class);
         ResponseEntity<List<ClientsDto>> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.GET, null, responseType);
         assertNotNull(response);
         assertEquals(2, response.getBody().size());
@@ -114,7 +110,7 @@ public class ClientsIT {
     @Test
     public void deleteWithNotExistsIdShouldInternalError() {
         ResponseEntity<?> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + NEW_CLIENT_ID, HttpMethod.DELETE, null, Void.class);
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
 }
