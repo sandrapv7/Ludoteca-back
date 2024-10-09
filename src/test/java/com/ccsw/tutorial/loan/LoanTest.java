@@ -1,15 +1,21 @@
 package com.ccsw.tutorial.loan;
 
+import com.ccsw.tutorial.clients.ClientsService;
+import com.ccsw.tutorial.clients.model.Clients;
 import com.ccsw.tutorial.clients.model.ClientsDto;
 import com.ccsw.tutorial.common.exceptions.Exceptions;
+import com.ccsw.tutorial.game.GameService;
+import com.ccsw.tutorial.game.model.Game;
 import com.ccsw.tutorial.game.model.GameDto;
 import com.ccsw.tutorial.loan.model.Loan;
 import com.ccsw.tutorial.loan.model.LoanDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.util.*;
 
@@ -22,8 +28,87 @@ public class LoanTest {
     @Mock
     private LoanRepository loanRepository;
 
+    @Mock
+    private GameService gameService;
+
+    @Mock
+    private ClientsService clientService;
+
     @InjectMocks
     private LoanServiceImpl loanService;
+
+    @Test
+    public void testFindAllParametersNull() {
+        when(loanRepository.findAll(any(Specification.class))).thenReturn(Collections.emptyList());
+        List<Loan> loans = loanService.find(null, null, null);
+        verify(loanRepository, times(1)).findAll(any(Specification.class));
+        assertTrue(loans.isEmpty());
+        assertEquals(0, loans.size());
+    }
+
+    @Test
+    public void testFindWithIdGame() {
+        Loan loan = new Loan();
+        loan.setId(1L);
+        Game game = new Game();
+        game.setId(1L);
+        loan.setGame(game);
+        when(loanRepository.findAll(any(Specification.class))).thenReturn(Arrays.asList(loan));
+        List<Loan> loans = loanService.find(1L, null, null);
+        verify(loanRepository, times(1)).findAll(any(Specification.class));
+        assertEquals(1, loans.size());
+        assertEquals(1L, loans.get(0).getId());
+    }
+
+    @Test
+    public void testFindWithIdClient() {
+        Loan loan = new Loan();
+        loan.setId(2L);
+        Clients client = new Clients();
+        client.setId(2L);
+        loan.setClient(client);
+        when(loanRepository.findAll(any(Specification.class))).thenReturn(Arrays.asList(loan));
+
+        List<Loan> loans = loanService.find(null, 2L, null);
+
+        verify(loanRepository, times(1)).findAll(any(Specification.class));
+
+        assertEquals(1, loans.size());
+        assertEquals(2L, loans.get(0).getId());
+    }
+
+    @Test
+    public void testFindWithDate() {
+        Loan loan = new Loan();
+        loan.setId(3L);
+        Date date = new Date();
+        loan.setDateStart(date);
+        when(loanRepository.findAll(any(Specification.class))).thenReturn(Arrays.asList(loan));
+        List<Loan> loans = loanService.find(null, null, date);
+        verify(loanRepository, times(1)).findAll(any(Specification.class));
+        assertEquals(1, loans.size());
+        assertEquals(3L, loans.get(0).getId());
+    }
+
+    @Test
+    public void testFindWithAllParameters() {
+        Loan loan = new Loan();
+        loan.setId(4L);
+        Game game = new Game();
+        game.setId(1L);
+        loan.setGame(game);
+        Clients client = new Clients();
+        client.setId(2L);
+        loan.setClient(client);
+        Date date = new Date();
+        loan.setDateStart(date);
+
+        when(loanRepository.findAll(any(Specification.class))).thenReturn(Arrays.asList(loan));
+        List<Loan> loans = loanService.find(1L, 2L, date);
+        verify(loanRepository, times(1)).findAll(any(Specification.class));
+
+        assertEquals(1, loans.size());
+    }
 
     @Test
     public void testSaveThrowsExceptionWhenEndDateBeforeStartDate() {
@@ -78,17 +163,15 @@ public class LoanTest {
         dto.setClient(clientsDto);
 
         List<Loan> existingLoans = new ArrayList<>();
-        when(loanService.find(gameDto.getId(), null, any())).thenReturn(existingLoans);
-
         existingLoans.add(new Loan());
+        when(loanService.find(gameDto.getId(), null, any())).thenReturn(existingLoans);
         Exception exception = assertThrows(Exceptions.class, () -> loanService.save(dto));
         assertEquals("El juego ya está prestado a otro cliente en el periodo de tiempo seleccionado.", exception.getMessage());
-
 
     }
 
     @Test
-    public void testSaveThrowsExceptionWhenClientAlreadyLoaned2Times() {
+    public void testSaveLoanSuccess() throws Exception {
         LoanDto dto = new LoanDto();
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_YEAR, 10);
@@ -103,12 +186,23 @@ public class LoanTest {
         clientsDto.setId(1L);
         dto.setClient(clientsDto);
 
-        Loan loan1 = new Loan();
-        Loan loan2 = new Loan();
-        List<Loan> existingLoans = Arrays.asList(loan1, loan2);
-        when(loanService.find(null, clientsDto.getId(), any())).thenReturn(existingLoans);
-        Exception exception = assertThrows(Exceptions.class, () -> loanService.save(dto));
-        assertEquals("Este cliente ya tiene dos juegos prestados el mismo día.", exception.getMessage());
+        Game game = new Game();
+        game.setId(1L);
+        when(gameService.get(gameDto.getId())).thenReturn(game);
+
+        Clients client = new Clients();
+        client.setId(1L);
+        when(clientService.get(clientsDto.getId())).thenReturn(client);
+
+        ArgumentCaptor<Loan> savedLoan = ArgumentCaptor.forClass(Loan.class);
+        loanService.save(dto);
+        verify(loanRepository).save(savedLoan.capture());
+
+        assertNotNull(savedLoan.getValue());
+        assertEquals(1L, savedLoan.getValue().getGame().getId());
+        assertEquals(1L, savedLoan.getValue().getClient().getId());
+        assertEquals(dto.getDateStart(), savedLoan.getValue().getDateStart());
+        assertEquals(dto.getDateEnd(), savedLoan.getValue().getDateEnd());
     }
 
     @Test
