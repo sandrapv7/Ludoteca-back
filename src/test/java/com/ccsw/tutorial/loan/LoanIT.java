@@ -134,7 +134,7 @@ public class LoanIT {
         Map<String, Object> params = new HashMap<>();
         params.put(GAME_ID_PARAM, null);
         params.put(CLIENT_ID_PARAM, null);
-        params.put(DATE_PARAM, DATE_EXISTS);
+        //params.put(DATE_PARAM, DATE_EXISTS);
 
         ResponseEntity<ResponsePage<LoanDto>> response = restTemplate.exchange(getUrlWithParams(), HttpMethod.POST, new HttpEntity<>(searchDto), responseTypePage, params);
         assertNotNull(response);

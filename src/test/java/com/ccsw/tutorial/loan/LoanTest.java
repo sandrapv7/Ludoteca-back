@@ -68,11 +68,8 @@ public class LoanTest {
         client.setId(2L);
         loan.setClient(client);
         when(loanRepository.findAll(any(Specification.class))).thenReturn(Arrays.asList(loan));
-
         List<Loan> loans = loanService.find(null, 2L, null);
-
         verify(loanRepository, times(1)).findAll(any(Specification.class));
-
         assertEquals(1, loans.size());
         assertEquals(2L, loans.get(0).getId());
     }
