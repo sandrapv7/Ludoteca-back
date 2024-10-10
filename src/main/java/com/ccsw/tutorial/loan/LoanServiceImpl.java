@@ -45,9 +45,7 @@ public class LoanServiceImpl implements LoanService {
     @Override
     public Page<Loan> findLoans(Long idGame, Long idClient, Date date, LoanSearchDto dto) {
         Specification<Loan> spec = specif(idGame, idClient, date);
-        Page<Loan> p = this.loanRepository.findAll(spec, dto.getPageable().getPageable());
-        System.out.println("size page" + p.getTotalElements());
-        return p;
+        return this.loanRepository.findAll(spec, dto.getPageable().getPageable());
 
     }
 
