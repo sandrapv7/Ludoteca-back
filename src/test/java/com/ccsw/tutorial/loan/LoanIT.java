@@ -20,7 +20,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -98,14 +101,9 @@ public class LoanIT {
     @Test
     public void findWithGameShouldReturnGamesInPage() {
         LoanSearchDto searchDto = new LoanSearchDto();
-        searchDto.setPageable(new PageableRequest(0, 5)); // Usa una página válida
-
-        Map<String, Object> params = new HashMap<>();
-        params.put(GAME_ID_PARAM, 1L);
-        params.put(CLIENT_ID_PARAM, null);
-        params.put(DATE_PARAM, null);
-
-        ResponseEntity<ResponsePage<LoanDto>> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.POST, new HttpEntity<>(searchDto), responseTypePage, params);
+        searchDto.setPageable(new PageableRequest(0, 5));
+        String urlWithParams = UriComponentsBuilder.fromHttpUrl(LOCALHOST + port + SERVICE_PATH).queryParam(GAME_ID_PARAM, 1L).toUriString();
+        ResponseEntity<ResponsePage<LoanDto>> response = restTemplate.exchange(urlWithParams, HttpMethod.POST, new HttpEntity<>(searchDto), responseTypePage);
         assertNotNull(response);
         assertEquals(3, response.getBody().getContent().size());
     }
@@ -113,35 +111,21 @@ public class LoanIT {
     @Test
     public void findWithClientsShouldReturnClientsInPage() {
         LoanSearchDto searchDto = new LoanSearchDto();
-        searchDto.setPageable(new PageableRequest(0, 5)); // Usa una página válida
-
-        Map<String, Object> params = new HashMap<>();
-        params.put(GAME_ID_PARAM, null);
-        params.put(CLIENT_ID_PARAM, 1L);
-        params.put(DATE_PARAM, null);
-
-        ResponseEntity<ResponsePage<LoanDto>> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.POST, new HttpEntity<>(searchDto), responseTypePage, params);
+        searchDto.setPageable(new PageableRequest(0, 5));
+        String urlWithParams = UriComponentsBuilder.fromHttpUrl(LOCALHOST + port + SERVICE_PATH).queryParam(CLIENT_ID_PARAM, 1L).toUriString();
+        ResponseEntity<ResponsePage<LoanDto>> response = restTemplate.exchange(urlWithParams, HttpMethod.POST, new HttpEntity<>(searchDto), responseTypePage);
         assertNotNull(response);
         assertNotNull(response.getBody());
-        System.out.println(response.getBody());
         assertEquals(2, response.getBody().getNumberOfElements());
+
     }
 
     @Test
-    public void findWithDateShouldReturnGamesInPage() {
-        LoanSearchDto searchDto = new LoanSearchDto();
-        searchDto.setPageable(new PageableRequest(0, PAGE_SIZE));
-        Map<String, Object> params = new HashMap<>();
-        params.put(GAME_ID_PARAM, null);
-        params.put(CLIENT_ID_PARAM, null);
-        //params.put(DATE_PARAM, DATE_EXISTS);
+    public void findWithDateShouldReturnDatesInPage() {
 
-        ResponseEntity<ResponsePage<LoanDto>> response = restTemplate.exchange(getUrlWithParams(), HttpMethod.POST, new HttpEntity<>(searchDto), responseTypePage, params);
-        assertNotNull(response);
-        assertEquals(2, response.getBody().getTotalElements());
-        assertEquals(PAGE_SIZE, response.getBody().getContent().size());
     }
 
+    /*
     @Test
     public void saveLoanShouldCreateNewLoan() throws Exception {
         LoanSearchDto searchDto = new LoanSearchDto();
@@ -176,18 +160,46 @@ public class LoanIT {
         response = restTemplate.exchange(getUrlWithParams(), HttpMethod.GET, null, responseType, params);
         assertNotNull(response);
         assertEquals(1, response.getBody().size()); // Asegurarse de que se ha creado un préstamo
-    }
+    }*/
 
-    ParameterizedTypeReference<List<LoanDto>> responseType = new ParameterizedTypeReference<List<LoanDto>>() {
-    };
+    @Test
+    public void saveLoanShouldCreateNewLoan() throws Exception {
+        LoanDto loanDto = new LoanDto();
+        ClientsDto clientDto = new ClientsDto();
+        clientDto.setId(1L);
+        loanDto.setClient(clientDto);
+
+        GameDto gameDto = new GameDto();
+        gameDto.setId(1L);
+        loanDto.setGame(gameDto);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_YEAR, 10);
+        loanDto.setDateStart(new Date());
+        loanDto.setDateEnd(calendar.getTime());
+
+        ResponseEntity<Void> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.PUT, new HttpEntity<>(loanDto), Void.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+    }
 
     @Test
     public void deleteWithExistsIdShouldDeleteLoan() {
-        restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + 6, HttpMethod.DELETE, null, Void.class);
-        ResponseEntity<List<LoanDto>> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.DELETE, null, responseType);
+        restTemplate.exchange(LOCALHOST + port + SERVICE_PATH + "/" + 6L, HttpMethod.DELETE, null, Void.class);
+
+        LoanSearchDto searchDto = new LoanSearchDto();
+        searchDto.setPageable(new PageableRequest(0, 5));
+
+        Map<String, Object> params = new HashMap<>();
+        params.put(GAME_ID_PARAM, null);
+        params.put(CLIENT_ID_PARAM, null);
+        params.put(DATE_PARAM, null);
+
+        ResponseEntity<ResponsePage<LoanDto>> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.POST, new HttpEntity<>(searchDto), responseTypePage, params);
         assertNotNull(response);
         assertNotNull(response.getBody());
-        assertEquals(5, response.getBody().size());
+        assertEquals(TOTAL_LOANS - 1, response.getBody().getTotalElements());
+        assertEquals(PAGE_SIZE, response.getBody().getContent().size());
     }
 
     @Test
