@@ -23,8 +23,23 @@ public interface LoanService {
      */
     List<Loan> find(Long idGame, Long idClient, Date date);
 
+    /**
+     * Recupera un listado paginado de prestamos filtrando opcionalmente por juego, cliente o fecha.
+     * @param idGame PK del juego
+     * @param idClient PK del cliente
+     * @param date fecha
+     * @param dto dto de búsqueda
+     * @return {@link Page} de {@link Loan}
+     */
     Page<Loan> findLoans(Long idGame, Long idClient, Date date, LoanSearchDto dto);
 
+    /**
+     * Recupera una especificacion de prestamos
+     * @param idGame PK del juego
+     * @param idClient PK del cliente
+     * @param date fecha
+     * @return {@link Specification} de {@link Loan}
+     */
     Specification<Loan> specif(Long idGame, Long idClient, Date date);
 
     /**

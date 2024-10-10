@@ -29,6 +29,15 @@ public class LoanController {
     @Autowired
     ModelMapper mapper;
 
+    /**
+     * Método para obtener un listado paginado y filtrado de {@link Loan}
+     *
+     * @param idGame PK del juego
+     * @param idClient PK del cliente
+     * @param date fecha
+     * @param dto dto de búsqueda
+     * @return {@link Page} de {@link Loan}
+     */
     @Operation(summary = "Find Page", description = "Method that return a page of Loans")
     @RequestMapping(path = "", method = RequestMethod.POST)
     public Page<LoanDto> findLoans(@RequestParam(value = "idGame", required = false) Long idGame, @RequestParam(value = "idClient", required = false) Long idClient, @RequestParam(value = "date", required = false) Date date,
@@ -48,6 +57,10 @@ public class LoanController {
         loanService.save(dto);
     }
 
+    /**
+     * Método para eliminar un {@link Loan}
+     * @param id Pk de la entidad
+     */
     @Operation(summary = "Delete", description = "Method that deletes a loan")
     @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
     public void delete(@PathVariable("id") Long id) throws Exception {

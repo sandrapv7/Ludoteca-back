@@ -20,10 +20,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.Calendar;
+import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -39,11 +37,11 @@ public class LoanIT {
 
     private static final String GAME_ID_PARAM = "idGame";
 
-    private static final String DATE_PARAM = "date";
-
     private static final int TOTAL_LOANS = 6;
 
     private static final int PAGE_SIZE = 5;
+
+    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 
     @LocalServerPort
     private int port;
@@ -57,22 +55,12 @@ public class LoanIT {
     ParameterizedTypeReference<ResponsePage<LoanDto>> responseTypePage = new ParameterizedTypeReference<ResponsePage<LoanDto>>() {
     };
 
-    private String getUrlWithParams() {
-        return UriComponentsBuilder.fromHttpUrl(LOCALHOST + port + SERVICE_PATH).queryParam(GAME_ID_PARAM, "{" + GAME_ID_PARAM + "}").queryParam(CLIENT_ID_PARAM, "{" + CLIENT_ID_PARAM + "}").queryParam(DATE_PARAM, "{" + DATE_PARAM + "}")
-                .encode().toUriString();
-    }
-
     @Test
     public void findWithoutFiltersShouldReturnAllLoansInPage() {
         LoanSearchDto searchDto = new LoanSearchDto();
-        searchDto.setPageable(new PageableRequest(0, 5)); // Usa una página válida
+        searchDto.setPageable(new PageableRequest(0, 5));
 
-        Map<String, Object> params = new HashMap<>();
-        params.put(GAME_ID_PARAM, null);
-        params.put(CLIENT_ID_PARAM, null);
-        params.put(DATE_PARAM, null);
-
-        ResponseEntity<ResponsePage<LoanDto>> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.POST, new HttpEntity<>(searchDto), responseTypePage, params);
+        ResponseEntity<ResponsePage<LoanDto>> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.POST, new HttpEntity<>(searchDto), responseTypePage);
         assertNotNull(response);
         assertNotNull(response.getBody());
         assertEquals(TOTAL_LOANS, response.getBody().getTotalElements());
@@ -83,15 +71,11 @@ public class LoanIT {
     @Test
     public void findSecondPageWithFiveSizeShouldReturnLastResult() {
         LoanSearchDto searchDto = new LoanSearchDto();
-        searchDto.setPageable(new PageableRequest(1, 5)); // Usa una página válida
+        searchDto.setPageable(new PageableRequest(1, 5));
 
-        Map<String, Object> params = new HashMap<>();
-        params.put(GAME_ID_PARAM, null);
-        params.put(CLIENT_ID_PARAM, null);
-        params.put(DATE_PARAM, null);
         int elementsCount = TOTAL_LOANS - PAGE_SIZE;
 
-        ResponseEntity<ResponsePage<LoanDto>> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.POST, new HttpEntity<>(searchDto), responseTypePage, params);
+        ResponseEntity<ResponsePage<LoanDto>> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.POST, new HttpEntity<>(searchDto), responseTypePage);
         assertNotNull(response);
         assertNotNull(response.getBody());
         assertEquals(TOTAL_LOANS, response.getBody().getTotalElements());
@@ -121,65 +105,236 @@ public class LoanIT {
     }
 
     @Test
-    public void findWithDateShouldReturnDatesInPage() {
-
+    public void findWithDateShouldReturnLoansInPage() {
+        LoanSearchDto searchDto = new LoanSearchDto();
+        searchDto.setPageable(new PageableRequest(0, PAGE_SIZE)); // Asegúrate de que PAGE_SIZE es válido
+        String urlWithParams = LOCALHOST + port + SERVICE_PATH + "?date=Wed Oct 03 2024";
+        ResponseEntity<ResponsePage<LoanDto>> response = restTemplate.exchange(urlWithParams, HttpMethod.POST, new HttpEntity<>(searchDto), // Enviando el cuerpo de la solicitud
+                responseTypePage);
+        assertNotNull(response);
+        assertNotNull(response.getBody());
+        assertEquals(2, response.getBody().getTotalElements());
     }
 
-    /*
     @Test
-    public void saveLoanShouldCreateNewLoan() throws Exception {
+    public void findWithGameAndClientShouldReturnLoansInPage() {
         LoanSearchDto searchDto = new LoanSearchDto();
         searchDto.setPageable(new PageableRequest(0, PAGE_SIZE));
-        Map<String, Object> params = new HashMap<>();
-        params.put(GAME_ID_PARAM, 2L);
-        params.put(CLIENT_ID_PARAM, 3L);
-        params.put(DATE_PARAM, null);
-        // Crear un LoanDto simulado
-        LoanDto dto = new LoanDto();
+        String urlWithParams = UriComponentsBuilder.fromHttpUrl(LOCALHOST + port + SERVICE_PATH).queryParam(GAME_ID_PARAM, 1L).queryParam(CLIENT_ID_PARAM, 1L).toUriString();
+        ResponseEntity<ResponsePage<LoanDto>> response = restTemplate.exchange(urlWithParams, HttpMethod.POST, new HttpEntity<>(searchDto), responseTypePage);
+        assertNotNull(response);
+        assertNotNull(response.getBody());
+        assertEquals(1, response.getBody().getContent().size());
+    }
 
-        GameDto gameDto = new GameDto();
-        gameDto.setId(1L);
-        dto.setGame(gameDto);
-
-        ClientsDto clientsDto = new ClientsDto();
-        clientsDto.setId(1L);
-        dto.setClient(clientsDto);
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_YEAR, 10);
-        dto.setDateStart(new Date());
-        dto.setDateEnd(calendar.getTime());
-
-        ResponseEntity<List<LoanDto>> response = restTemplate.exchange(getUrlWithParams(), HttpMethod.GET, null, responseType, params);
+    @Test
+    public void findWithGameAndDateShouldReturnLoansInPage() {
+        LoanSearchDto searchDto = new LoanSearchDto();
+        searchDto.setPageable(new PageableRequest(0, PAGE_SIZE));
+        String urlWithParams = LOCALHOST + port + SERVICE_PATH + "?idGame=1&date=Wed Oct 03 2024";
+        ResponseEntity<ResponsePage<LoanDto>> response = restTemplate.exchange(urlWithParams, HttpMethod.POST, new HttpEntity<>(searchDto), // Enviando el cuerpo de la solicitud
+                responseTypePage);
 
         assertNotNull(response);
-        assertEquals(0, response.getBody().size());
+        assertNotNull(response.getBody());
+        assertEquals(1, response.getBody().getContent().size());
+    }
 
-        restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.PUT, new HttpEntity<>(dto), Void.class);
+    @Test
+    public void findWithClientAndDateShouldReturnLoansInPage() {
+        LoanSearchDto searchDto = new LoanSearchDto();
+        searchDto.setPageable(new PageableRequest(0, PAGE_SIZE));
+        String urlWithParams = LOCALHOST + port + SERVICE_PATH + "?idClient=1&date=Wed Oct 03 2024";
+        ResponseEntity<ResponsePage<LoanDto>> response = restTemplate.exchange(urlWithParams, HttpMethod.POST, new HttpEntity<>(searchDto), // Enviando el cuerpo de la solicitud
+                responseTypePage);
 
-        response = restTemplate.exchange(getUrlWithParams(), HttpMethod.GET, null, responseType, params);
         assertNotNull(response);
-        assertEquals(1, response.getBody().size()); // Asegurarse de que se ha creado un préstamo
-    }*/
+        assertNotNull(response.getBody());
+        assertEquals(1, response.getBody().getContent().size());
+    }
+
+    @Test
+    public void findWithGameAndClientAndDateShouldReturnLoansInPage() {
+        LoanSearchDto searchDto = new LoanSearchDto();
+        searchDto.setPageable(new PageableRequest(0, PAGE_SIZE));
+        String urlWithParams = LOCALHOST + port + SERVICE_PATH + "?idGame=1&idClient=1&date=Wed Oct 03 2024";
+        ResponseEntity<ResponsePage<LoanDto>> response = restTemplate.exchange(urlWithParams, HttpMethod.POST, new HttpEntity<>(searchDto), // Enviando el cuerpo de la solicitud
+                responseTypePage);
+
+        assertNotNull(response);
+        assertNotNull(response.getBody());
+        assertEquals(1, response.getBody().getContent().size());
+    }
 
     @Test
     public void saveLoanShouldCreateNewLoan() throws Exception {
         LoanDto loanDto = new LoanDto();
+
         ClientsDto clientDto = new ClientsDto();
-        clientDto.setId(1L);
+        clientDto.setId(3L);
         loanDto.setClient(clientDto);
 
         GameDto gameDto = new GameDto();
         gameDto.setId(1L);
         loanDto.setGame(gameDto);
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_YEAR, 10);
-        loanDto.setDateStart(new Date());
-        loanDto.setDateEnd(calendar.getTime());
+        Date ini = format.parse("2023-01-03");
+        Date fin = format.parse("2023-01-10");
 
-        ResponseEntity<Void> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.PUT, new HttpEntity<>(loanDto), Void.class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        loanDto.setDateStart(ini);
+        loanDto.setDateEnd(fin);
+
+        restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.PUT, new HttpEntity<>(loanDto), Void.class);
+
+        LoanSearchDto searchDto = new LoanSearchDto();
+        searchDto.setPageable(new PageableRequest(0, PAGE_SIZE));
+        ResponseEntity<ResponsePage<LoanDto>> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.POST, new HttpEntity<>(searchDto), responseTypePage);
+        assertNotNull(response);
+        assertNotNull(response.getBody());
+        assertEquals(TOTAL_LOANS + 1, response.getBody().getTotalElements());
+    }
+
+    @Test
+    public void saveWithDateEndBeforeDateIniShouldBadRequest() throws Exception {
+        LoanDto loanDto = new LoanDto();
+
+        ClientsDto clientDto = new ClientsDto();
+        clientDto.setId(3L);
+        loanDto.setClient(clientDto);
+
+        GameDto gameDto = new GameDto();
+        gameDto.setId(1L);
+        loanDto.setGame(gameDto);
+
+        Date ini = format.parse("2023-01-10");
+        Date fin = format.parse("2023-01-03");
+
+        loanDto.setDateStart(ini);
+        loanDto.setDateEnd(fin);
+
+        ResponseEntity<?> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.PUT, new HttpEntity<>(loanDto), Void.class);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
+    public void saveWithPeriodMore14DaysShouldBadRequest() throws Exception {
+        LoanDto loanDto = new LoanDto();
+
+        ClientsDto clientDto = new ClientsDto();
+        clientDto.setId(3L);
+        loanDto.setClient(clientDto);
+
+        GameDto gameDto = new GameDto();
+        gameDto.setId(1L);
+        loanDto.setGame(gameDto);
+
+        Date ini = format.parse("2023-01-03");
+        Date fin = format.parse("2023-01-18");
+
+        loanDto.setDateStart(ini);
+        loanDto.setDateEnd(fin);
+
+        ResponseEntity<?> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.PUT, new HttpEntity<>(loanDto), Void.class);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
+    public void save1Game2TimesSamePeriod() throws Exception {
+        LoanDto loanDto = new LoanDto();
+
+        ClientsDto clientDto = new ClientsDto();
+        clientDto.setId(3L);
+        loanDto.setClient(clientDto);
+
+        GameDto gameDto = new GameDto();
+        gameDto.setId(1L);
+        loanDto.setGame(gameDto);
+
+        Date ini = format.parse("2023-01-03");
+        Date fin = format.parse("2023-01-10");
+        loanDto.setDateStart(ini);
+        loanDto.setDateEnd(fin);
+
+        ResponseEntity<?> response1 = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.PUT, new HttpEntity<>(loanDto), Void.class);
+        assertEquals(HttpStatus.OK, response1.getStatusCode());
+
+        LoanDto loanDto2 = new LoanDto();
+
+        ClientsDto clientDto2 = new ClientsDto();
+        clientDto2.setId(2L);
+        loanDto2.setClient(clientDto2);
+
+        GameDto gameDto2 = new GameDto();
+        gameDto2.setId(1L);
+        loanDto2.setGame(gameDto2);
+
+        Date ini2 = format.parse("2023-01-03");
+        Date fin2 = format.parse("2023-01-10");
+        loanDto2.setDateStart(ini2);
+        loanDto2.setDateEnd(fin2);
+
+        ResponseEntity<Void> response2 = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.PUT, new HttpEntity<>(loanDto2), Void.class);
+        assertEquals(HttpStatus.BAD_REQUEST, response2.getStatusCode());
+
+    }
+
+    @Test
+    public void saveWithMoreThan2LoansClientShouldBadRequest() throws Exception {
+        LoanDto loanDto = new LoanDto();
+
+        ClientsDto clientDto = new ClientsDto();
+        clientDto.setId(3L);
+        loanDto.setClient(clientDto);
+
+        GameDto gameDto = new GameDto();
+        gameDto.setId(1L);
+        loanDto.setGame(gameDto);
+
+        Date ini = format.parse("2023-01-03");
+        Date fin = format.parse("2023-01-10");
+
+        loanDto.setDateStart(ini);
+        loanDto.setDateEnd(fin);
+
+        ResponseEntity<?> response1 = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.PUT, new HttpEntity<>(loanDto), Void.class);
+        assertEquals(HttpStatus.OK, response1.getStatusCode());
+
+        LoanDto loanDto2 = new LoanDto();
+
+        ClientsDto clientDto2 = new ClientsDto();
+        clientDto2.setId(3L);
+        loanDto2.setClient(clientDto2);
+
+        GameDto gameDto2 = new GameDto();
+        gameDto2.setId(2L);
+        loanDto2.setGame(gameDto2);
+
+        Date ini2 = format.parse("2023-01-03");
+        Date fin2 = format.parse("2023-01-10");
+
+        loanDto2.setDateStart(ini2);
+        loanDto2.setDateEnd(fin2);
+
+        ResponseEntity<?> response2 = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.PUT, new HttpEntity<>(loanDto2), Void.class);
+        assertEquals(HttpStatus.OK, response2.getStatusCode());
+        LoanDto loanDto3 = new LoanDto();
+
+        ClientsDto clientDto3 = new ClientsDto();
+        clientDto3.setId(3L);
+        loanDto3.setClient(clientDto3);
+
+        GameDto gameDto3 = new GameDto();
+        gameDto3.setId(3L);
+        loanDto3.setGame(gameDto3);
+
+        Date ini3 = format.parse("2023-01-03");
+        Date fin3 = format.parse("2023-01-10");
+
+        loanDto3.setDateStart(ini3);
+        loanDto3.setDateEnd(fin3);
+
+        ResponseEntity<?> response3 = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.PUT, new HttpEntity<>(loanDto3), Void.class);
+        assertEquals(HttpStatus.BAD_REQUEST, response3.getStatusCode());
 
     }
 
@@ -190,12 +345,7 @@ public class LoanIT {
         LoanSearchDto searchDto = new LoanSearchDto();
         searchDto.setPageable(new PageableRequest(0, 5));
 
-        Map<String, Object> params = new HashMap<>();
-        params.put(GAME_ID_PARAM, null);
-        params.put(CLIENT_ID_PARAM, null);
-        params.put(DATE_PARAM, null);
-
-        ResponseEntity<ResponsePage<LoanDto>> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.POST, new HttpEntity<>(searchDto), responseTypePage, params);
+        ResponseEntity<ResponsePage<LoanDto>> response = restTemplate.exchange(LOCALHOST + port + SERVICE_PATH, HttpMethod.POST, new HttpEntity<>(searchDto), responseTypePage);
         assertNotNull(response);
         assertNotNull(response.getBody());
         assertEquals(TOTAL_LOANS - 1, response.getBody().getTotalElements());
