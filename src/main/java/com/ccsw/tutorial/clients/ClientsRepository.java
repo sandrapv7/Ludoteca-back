@@ -12,9 +12,9 @@ import java.util.Optional;
 public interface ClientsRepository extends CrudRepository<Clients, Long> {
 
     /**
-     * Método para encontrar una
-     * @param name
-     * @return
+     * Método para encontrar un cliente
+     * @param name nombre del cliente
+     * @return cliente
      */
     Optional<Clients> findByName(String name);
 }

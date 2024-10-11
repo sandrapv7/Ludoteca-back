@@ -3,7 +3,6 @@ package com.ccsw.tutorial.loan.model;
 import com.ccsw.tutorial.clients.model.Clients;
 import com.ccsw.tutorial.game.model.Game;
 import jakarta.persistence.*;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 

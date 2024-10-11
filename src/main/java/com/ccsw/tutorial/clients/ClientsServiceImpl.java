@@ -49,6 +49,7 @@ public class ClientsServiceImpl implements ClientsService {
         if (this.get(id) == null) {
             throw new Exceptions("Not Exists");
         }
+
         this.clientsRepository.deleteById(id);
     }
 
