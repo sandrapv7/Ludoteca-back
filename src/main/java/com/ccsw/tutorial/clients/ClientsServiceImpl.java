@@ -20,7 +20,6 @@ public class ClientsServiceImpl implements ClientsService {
     @Autowired
     ClientsRepository clientsRepository;
 
-    //Responde con una Entity
     @Override
     public List<Clients> findAll() {
         return (List<Clients>) this.clientsRepository.findAll();
